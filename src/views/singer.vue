@@ -20,7 +20,7 @@
 import IndexList from '@/components/base/index-list'
 import { getSingerList } from "@/service/singer"
 import storage from 'good-storage'
-import {SINGER_KEYS} from '@/assets/js/constant'
+import { SINGER_KEY } from '@/assets/js/constant'
 export default {
   name: 'singer',
   data() {
@@ -42,7 +42,7 @@ export default {
       })
     },
     cacheSinger(singer) {
-      storage.session.set(SINGER_KEYS, singer)
+      storage.session.set(SINGER_KEY, singer)
     }
   },
   components: {

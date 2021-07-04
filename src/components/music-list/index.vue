@@ -9,17 +9,31 @@
       :style="bgImageStyle"
       ref='bgImage'
     >
+      <div
+        class="play-btn-wrapper"
+        :style="playBtnStyle"
+      >
+        <div
+          v-show="songs.length > 0"
+          class="play-btn"
+          @click="random"
+        >
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter" :style="filterStyle"></div>
     </div>
     <Scroll 
       class='list'
       :style="scrollStyle"
       v-loading='loading'
+      v-no-result:[noResultText]='noResult'
       :probeType='3'
       @scroll='onScroll'
     >
       <div class="song-list-wrapper">
-        <SongList :songs='songs'></SongList>
+        <SongList :songs='songs' @select="selectItem"></SongList>
       </div>
     </Scroll>
   </div>
@@ -28,7 +42,7 @@
 <script>
 import SongList from '@/components/base/song-list'
 import Scroll from '@/components/base/scroll'
-
+import { mapActions, mapState } from 'vuex'
 const RESERVED_HEIGHT = 40
 
 export default {
@@ -41,7 +55,11 @@ export default {
     },
     title: String,
     pic: String,
-    loading: Boolean
+    loading: Boolean,
+    noResultText: {
+      type: String,
+      default: '抱歉, 没有找到可播放的歌曲'
+    }
   },
   data() {
     return {
@@ -51,6 +69,18 @@ export default {
     }
   },
   computed: {
+    noResult() {
+      return !this.loading && !this.songs.length
+    },
+    playBtnStyle() {
+      let display = ''
+      if (this.scrollY >= this.maxTranslateY) {
+        display = 'none'
+      }
+      return {
+        display
+      }
+    },
     bgImageStyle() {
       const {scrollY} = this
       let zIndex = 0
@@ -95,9 +125,22 @@ export default {
     },
   },
   methods: {
+    selectItem({song, index}) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
     onScroll(pos) {
       this.scrollY = -pos.y
-    }
+    },
+    random() {
+      this.randomPlay(this.songs)
+    },
+    ...mapActions([
+      'selectPlay',
+      'randomPlay'
+    ])
   },
   mounted() {
     this.imageHeight = this.$refs.bgImage.clientHeight
@@ -146,34 +189,34 @@ export default {
       // padding-top: 70%;
       transform-origin: top;
       background-size: cover;
-      // .play-btn-wrapper {
-      //   position: absolute;
-      //   bottom: 20px;
-      //   z-index: 10;
-      //   width: 100%;
-      //   .play-btn {
-      //     box-sizing: border-box;
-      //     width: 135px;
-      //     padding: 7px 0;
-      //     margin: 0 auto;
-      //     text-align: center;
-      //     border: 1px solid $color-theme;
-      //     color: $color-theme;
-      //     border-radius: 100px;
-      //     font-size: 0;
-      //   }
-      //   .icon-play {
-      //     display: inline-block;
-      //     vertical-align: middle;
-      //     margin-right: 6px;
-      //     font-size: $font-size-medium-x;
-      //   }
-      //   .text {
-      //     display: inline-block;
-      //     vertical-align: middle;
-      //     font-size: $font-size-small;
-      //   }
-      // }
+      .play-btn-wrapper {
+        position: absolute;
+        bottom: 20px;
+        z-index: 10;
+        width: 100%;
+        .play-btn {
+          box-sizing: border-box;
+          width: 135px;
+          padding: 7px 0;
+          margin: 0 auto;
+          text-align: center;
+          border: 1px solid $color-theme;
+          color: $color-theme;
+          border-radius: 100px;
+          font-size: 0;
+        }
+        .icon-play {
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 6px;
+          font-size: $font-size-medium-x;
+        }
+        .text {
+          display: inline-block;
+          vertical-align: middle;
+          font-size: $font-size-small;
+        }
+      }
       .filter {
         position: absolute;
         top: 0;

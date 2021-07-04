@@ -14,7 +14,7 @@ import { getSingerDetail} from "@/service/singer"
 import { processSongs} from "@/service/song"
 import MusicList from "@/components/music-list"
 import storage from 'good-storage'
-import {SINGER_KEYS} from '@/assets/js/constant'
+import {SINGER_KEY} from '@/assets/js/constant'
 export default {
   name: 'singer-detail',
   props: {
@@ -33,7 +33,7 @@ export default {
       if(singer) {
         ret = singer
       } else{
-        const cachedSinger = storage.session.get(SINGER_KEYS)
+        const cachedSinger = storage.session.get(SINGER_KEY)
         if(cachedSinger && cachedSinger.mid == this.$route.params.id) {
           ret = cachedSinger
         }
