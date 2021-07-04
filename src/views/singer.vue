@@ -4,7 +4,15 @@
       :data='singers'
       @select='selectSinger'
     ></IndexList>
-    <router-view :singer="selectedSinger"></router-view>
+    <!-- <router-view :singer="selectedSinger"></router-view> -->
+    <!-- <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :singer="selectedSinger"/>
+      </transition>
+    </router-view> -->
+    <transition appear name="slide">
+      <router-view :singer="selectedSinger"></router-view>
+    </transition>
   </div>
 </template>
 
