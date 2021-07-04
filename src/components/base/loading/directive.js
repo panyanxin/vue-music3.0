@@ -1,4 +1,4 @@
-import Loading from './loading'
+import Loading from './index'
 import {createApp} from 'vue'
 import {addClass, removeClass} from '@/assets/js/dom'
 const loadingDirective = {
@@ -7,7 +7,7 @@ const loadingDirective = {
     const instance = app.mount(document.createElement('div'))
     el.instance = instance
     const title = binding.arg
-    console.log(binding.arg)
+    // console.log(binding.arg)
     if(typeof title !== 'undefined') {
       // 调用实例方法 类似ref
       instance.setTitle(title)
