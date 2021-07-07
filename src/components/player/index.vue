@@ -12,6 +12,17 @@
         <h1 class="subtitle">{{currentSong.singer}}</h1>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{formatTime(currentTime)}}</span>
+          <div class="progress-bar-wrapper">
+            <ProgressBar 
+              :progress='progress'
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            />
+          </div>
+          <span class="time time-r">{{formatTime(currentSong.duration)}}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left" >
             <i @click="changeMode" :class="modeIcon"></i>
@@ -36,6 +47,8 @@
       @pause="pause" 
       @canplay="ready"
       @error="error"
+      @timeupdate="updateTime"
+      @ended="end"
     ></audio>
   </div>
 </template>
@@ -45,17 +58,23 @@ import { useStore } from 'vuex'
 import {computed, watch, ref} from 'vue'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
+import { formatTime } from '@/assets/js/util'
+ import { PLAY_MODE } from '@/assets/js/constant'
+import ProgressBar from './progress-bar'
 export default {
   name: 'player',
   setup() {
     // data
     const audioRef = ref(null)
     const songReady = ref(false)
+    const currentTime = ref(0)
+    let progressChanging = false
     // vuex
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
     const currentIndex = computed(() => store.state.currentIndex)
+    const playMode = computed(() => store.state.playMode)
     // hooks
     const { modeIcon, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
@@ -64,6 +83,7 @@ export default {
     const playing = computed(() => store.state.playing)
     const playIcon = computed(() => playing.value ? 'icon-pause' : 'icon-play')
     const disableCls = computed(() => songReady.value ? '': 'disable')
+    const progress = computed(() => currentTime.value / currentSong.value.duration)
     // watch
     watch(currentSong, (newSong) => {
       if(!newSong.id || !newSong.url) return
@@ -73,7 +93,6 @@ export default {
     })
     watch(playing, (newPlaying) => {
       if (!songReady.value) return
-      songReady.value = false
       const audioEl = audioRef.value
       newPlaying ? audioEl.play() : audioEl.pause() 
     })
@@ -130,6 +149,30 @@ export default {
     function error() {
       songReady.value = true
     }
+    function end() {
+      currentTime.value = 0
+      if (playMode.value === PLAY_MODE.loop) {
+        loop()
+      } else {
+        next()
+      }
+    }
+    function updateTime(e){
+      if(!progressChanging) {
+        currentTime.value = e.target.currentTime
+      }
+    }
+    function onProgressChanging(progress) {
+      progressChanging = true
+      currentTime.value = currentTime.value.duration * progress
+    }
+    function onProgressChanged(progress) {
+      progressChanging = false
+      audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+      if (!playing.value) {
+        store.commit('setPlayingState', true)
+      }
+    }
     return {
       // variable
       audioRef,
@@ -137,6 +180,8 @@ export default {
       currentSong,
       playIcon,
       disableCls,
+      currentTime,
+      progress,
       // fn
       goBack,
       togglePlay,
@@ -145,6 +190,11 @@ export default {
       next,
       ready,
       error,
+      end,
+      updateTime,
+      formatTime,
+      onProgressChanging,
+      onProgressChanged,
       // use-mode
       modeIcon,
       changeMode,
@@ -152,6 +202,9 @@ export default {
       getFavoriteIcon,
       toggleFavorite,
     }
+  },
+  components: {
+    ProgressBar,
   }
 }
 </script>
