@@ -57,6 +57,9 @@ export default {
       loadingText: '正在载入...'
     };
   },
+  methods: {
+    
+  },
   async created() {
     const { sliders, albums } = await getRecommend();
     this.sliders = sliders;
