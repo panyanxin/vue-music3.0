@@ -1,5 +1,8 @@
 <template>
-  <div class="player">
+  <div 
+    class="player"
+    v-show="playlist&&playlist.length"
+  >
     <div class="normal-player" v-show="fullScreen">
       <div class="background">
         <img :src="currentSong.pic" alt="">
@@ -61,6 +64,7 @@
           <span class="time time-l">{{formatTime(currentTime)}}</span>
           <div class="progress-bar-wrapper">
             <ProgressBar 
+              ref='barRef'
               :progress='progress'
               @progress-changing="onProgressChanging"
               @progress-changed="onProgressChanged"
@@ -87,6 +91,7 @@
         </div>
       </div>
     </div>
+    <MiniPlayer :progress='progress' :toggle-play='togglePlay'/>
     <audio 
       ref='audioRef' 
       @pause="pause" 
@@ -100,7 +105,7 @@
 
 <script>
 import { useStore } from 'vuex'
-import {computed, watch, ref} from 'vue'
+import {computed, watch, ref, nextTick} from 'vue'
 import useMode from './use-mode'
 import useCd from './use-cd'
 import useFavorite from './use-favorite'
@@ -111,11 +116,13 @@ import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
 import ProgressBar from './progress-bar'
 import Scroll from '@/components/base/scroll'
+import MiniPlayer from './mini-player'
 export default {
   name: 'player',
   setup() {
     // data
     const audioRef = ref(null)
+    const barRef = ref(null)
     const songReady = ref(false)
     const currentTime = ref(0)
     let progressChanging = false
@@ -160,6 +167,12 @@ export default {
       }else{
         audioEl.pause()
         stopLyric()
+      }
+    })
+    watch(fullScreen, async (newFullScreen) => {
+      if(newFullScreen) {
+        await nextTick()
+        barRef.value.setOffset(progress.value)
       }
     })
 
@@ -246,8 +259,10 @@ export default {
     return {
       // variable
       audioRef,
+      barRef,
       fullScreen,
       currentSong,
+      playlist,
       playIcon,
       disableCls,
       currentTime,
@@ -293,7 +308,8 @@ export default {
   },
   components: {
     ProgressBar,
-    Scroll
+    Scroll,
+    MiniPlayer
   }
 }
 </script>
