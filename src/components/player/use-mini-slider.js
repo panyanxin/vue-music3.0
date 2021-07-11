@@ -15,7 +15,6 @@ export default function useMiniSlider() {
   const currentIndex = computed(() => store.state.currentIndex)
 
   const sliderShow = computed(() => {
-    console.log(playlist.value)
     return !fullScreen.value && !!playlist.value
   })
   onMounted(() => {
@@ -48,6 +47,12 @@ export default function useMiniSlider() {
     watch(currentIndex, (newIndex) => {
       if(sliderVal && sliderShow.value) {
         sliderVal.goToPage(newIndex, 0, 0)
+      }
+    })
+    watch(playlist, async () => {
+      if(sliderVal && sliderShow.value) {
+        await nextTick()
+        sliderVal.refresh()
       }
     })
   })

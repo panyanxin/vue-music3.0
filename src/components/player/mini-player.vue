@@ -46,16 +46,21 @@
           ></i>
         </ProgressCircle>
       </div>
+      <div class="control" @click.stop='showPlaylist'>
+        <i class="icon-playlist"></i>
+      </div>
+      <Playlist ref='playlistRef'/>
     </div>
   </transition>
 </template>
 
 <script>
 import {useStore} from 'vuex'
-import {computed} from 'vue'
+import {ref, computed} from 'vue'
 import useCd from './use-cd'
 import useMiniSlider from './use-mini-slider'
 import ProgressCircle from './progress-circle'
+import Playlist from './playlist'
 export default {
   name: 'mini-player',
   props: {
@@ -66,6 +71,7 @@ export default {
     togglePlay: Function
   },
   setup() {
+    const playlistRef = ref(null)
     const store = useStore()
     const fullScreen = computed(() => store.state.fullScreen)
     const currentSong = computed(() => store.getters.currentSong)
@@ -82,12 +88,18 @@ export default {
       store.commit('setFullScreen', true)
     }
 
+    function showPlaylist() {
+      playlistRef.value.show()
+    }
+
     return {
+      playlistRef,
       fullScreen,
       playlist,
       currentSong,
       miniPlayIcon,
       showNormalPlayer,
+      showPlaylist,
       // use-cd
       cdCls, 
       cdRef, 
@@ -98,7 +110,8 @@ export default {
     }
   },
   components: {
-    ProgressCircle
+    ProgressCircle,
+    Playlist
   }
 }
 </script>

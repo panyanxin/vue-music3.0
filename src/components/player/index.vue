@@ -170,9 +170,12 @@ export default {
     // watch
     watch(currentSong, (newSong) => {
       if(!newSong.id || !newSong.url) return
+      currentTime.value = 0
+      songReady.value = false
       const audioEl = audioRef.value
       audioEl.src = newSong.url
       audioEl.play()
+      store.commit('setPlayingState', true)
     })
     watch(playing, (newPlaying) => {
       if (!songReady.value) return
@@ -214,7 +217,6 @@ export default {
           index = list.length - 1
         }
         store.commit('setCurrentIndex', index)
-        if(!playing.value) store.commit('setPlayingState', true)
       }
     }
     function next() {
@@ -228,7 +230,6 @@ export default {
           index = 0
         }
         store.commit('setCurrentIndex', index)
-        if(!playing.value) store.commit('setPlayingState', true)
       }
     }
     function loop() {
