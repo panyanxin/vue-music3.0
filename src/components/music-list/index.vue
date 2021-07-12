@@ -41,7 +41,7 @@
 
 <script>
 import SongList from '@/components/base/song-list'
-import Scroll from '@/components/base/scroll'
+import Scroll from '@/components/wrap-scroll'
 import { mapActions, mapState } from 'vuex'
 const RESERVED_HEIGHT = 40
 
