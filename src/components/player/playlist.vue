@@ -15,6 +15,9 @@
                 @click='changeMode'
               ></i>
               <span class="text">{{modeText}}</span>
+              <span class="clear" @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
             </h1>
           </div>
           <Scroll
@@ -50,9 +53,15 @@
               </li>
             </transition-group>
           </Scroll>
-          <div class="list-footer">
+          <div class="list-footer" @click='hide'>
             <span>关闭</span>
           </div>
+          <Confirm 
+            ref='confirmRef'
+            text='是否清空播放列表?'
+            confirm-btn-text='清空' 
+            @confirm='confirmClear'
+          />
         </div>
       </div>
     </transition>
@@ -60,11 +69,12 @@
 </template>
 
 <script>
-import Scroll from '@/components/base/scroll'
-import {ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
+import Scroll from '@/components/base/scroll'
+import Confirm from '@/components/base/confirm'
 export default {
   name: 'playlist',
   setup() {
@@ -72,6 +82,7 @@ export default {
     const removing = ref(false)
     const scrollRef = ref(null)
     const listRef = ref(null)
+    const confirmRef = ref(null)
 
     const store = useStore()
     const playlist = computed(() => store.state.playlist)
@@ -132,9 +143,19 @@ export default {
       if(removing.value) return
       removing.value = true
       store.dispatch('removeSong', song)
+      if(!playlist.value.length) hide()
       setTimeout(() => {
         removing.value = false
       }, 300)
+    }
+
+    function showConfirm() {
+      confirmRef.value.show()
+    }
+    
+    function confirmClear() {
+      store.dispatch('clearSongList')
+      hide()
     }
     
     return {
@@ -142,6 +163,7 @@ export default {
       removing,
       scrollRef,
       listRef,
+      confirmRef,
       playlist,
       sequenceList,
       // fn
@@ -150,6 +172,8 @@ export default {
       getCurrentIcon,
       selectItem,
       removeSong,
+      showConfirm,
+      confirmClear,
       // use-mode
       modeIcon, 
       modeText,
@@ -160,7 +184,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Confirm
   } 
 }
 </script>

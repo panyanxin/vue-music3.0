@@ -117,12 +117,15 @@ export default {
       }
     },
     scrollStyle() {
-      // const bottom = this.playlist.length ? '60px' : '0'
+      const bottom = this.playlist.length ? '60px' : '0'
       return {
         top: `${this.imageHeight}px`,
-        // bottom
+        bottom
       }
     },
+    ...mapState([
+      'playlist'
+    ])
   },
   methods: {
     selectItem({song, index}) {
