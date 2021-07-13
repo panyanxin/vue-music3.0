@@ -30,10 +30,15 @@
       v-loading='loading'
       v-no-result:[noResultText]='noResult'
       :probeType='3'
+      :rank='rank'
       @scroll='onScroll'
     >
       <div class="song-list-wrapper">
-        <SongList :songs='songs' @select="selectItem"></SongList>
+        <SongList 
+          :rank='rank'
+          :songs='songs'
+          @select="selectItem"
+        ></SongList>
       </div>
     </Scroll>
   </div>
@@ -59,7 +64,8 @@ export default {
     noResultText: {
       type: String,
       default: '抱歉, 没有找到可播放的歌曲'
-    }
+    },
+    rank: Boolean
   },
   data() {
     return {

@@ -6,6 +6,9 @@
       :key="song.id"
       @click="selectItem(song, index)"
     >
+      <div class="rank" v-if="rank">
+        <span :class="getRankCls(index)">{{ getRankText(index) }}</span>
+      </div>
       <div class="content">
         <h2 class="name">{{song.name}}</h2>
         <p class="desc">{{getDesc(song)}}</p>
@@ -23,7 +26,8 @@ export default {
       default() {
         return []
       }
-    }
+    },
+    rank: Boolean
   },
   emits: ['select'],
   methods: {
@@ -32,6 +36,18 @@ export default {
     },
     getDesc(song) {
       return `${song.singer} - ${song.album}`
+    },
+    getRankCls(index) {
+      if (index <= 2) {
+        return `icon icon${index}`
+      } else {
+        return 'text'
+      }
+    },
+    getRankText(index) {
+      if (index > 2) {
+        return index + 1
+      }
     }
   }
 }
@@ -55,15 +71,15 @@ export default {
           width: 25px;
           height: 24px;
           background-size: 25px 24px;
-          // &.icon0 {
-          //   @include bg-image('first');
-          // }
-          // &.icon1 {
-          //   @include bg-image('second');
-          // }
-          // &.icon2 {
-          //   @include bg-image('third');
-          // }
+          &.icon0 {
+            @include bg-image('first');
+          }
+          &.icon1 {
+            @include bg-image('second');
+          }
+          &.icon2 {
+            @include bg-image('third');
+          }
         }
         .text {
           color: $color-theme;
