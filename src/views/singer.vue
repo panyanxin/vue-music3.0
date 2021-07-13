@@ -11,7 +11,7 @@
       </transition>
     </router-view> -->
     <transition appear name="slide">
-      <router-view :singer="selectedSinger"></router-view>
+      <router-view :data="selectedSinger"></router-view>
     </transition>
   </div>
 </template>
