@@ -53,6 +53,12 @@
               </li>
             </transition-group>
           </Scroll>
+          <div class="list-add">
+            <div class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到队列</span>
+            </div>
+          </div>
           <div class="list-footer" @click='hide'>
             <span>关闭</span>
           </div>
@@ -62,6 +68,7 @@
             confirm-btn-text='清空' 
             @confirm='confirmClear'
           />
+          <add-song ref="addSongRef"></add-song>
         </div>
       </div>
     </transition>
@@ -75,6 +82,7 @@ import useMode from './use-mode'
 import useFavorite from './use-favorite'
 import Scroll from '@/components/base/scroll'
 import Confirm from '@/components/base/confirm'
+import AddSong from '@/components/add-song'
 export default {
   name: 'playlist',
   setup() {
@@ -83,6 +91,7 @@ export default {
     const scrollRef = ref(null)
     const listRef = ref(null)
     const confirmRef = ref(null)
+    const addSongRef = ref(null)
 
     const store = useStore()
     const playlist = computed(() => store.state.playlist)
@@ -158,12 +167,16 @@ export default {
       hide()
     }
     
+    function showAddSong() {
+      addSongRef.value.show()
+    }
     return {
       visible,
       removing,
       scrollRef,
       listRef,
       confirmRef,
+      addSongRef,
       playlist,
       sequenceList,
       // fn
@@ -181,11 +194,14 @@ export default {
       // use-favorite
       getFavoriteIcon,
       toggleFavorite,
+      // add-song
+      showAddSong,
     }
   },
   components: {
     Scroll,
-    Confirm
+    Confirm,
+    AddSong
   } 
 }
 </script>

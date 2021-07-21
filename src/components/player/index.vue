@@ -120,6 +120,7 @@ import useFavorite from './use-favorite'
 import useLyric from './use-lyric'
 import useMiddleInteractive from './use-middle-interactive'
 import useAnimation from './use-animation'
+import usePlayHistory from './use-play-history'
 
 import { formatTime } from '@/assets/js/util'
 import { PLAY_MODE } from '@/assets/js/constant'
@@ -161,6 +162,7 @@ export default {
       leave,
       afterLeave
     } = useAnimation()
+    const { savePlay } = usePlayHistory()
     // computed
     const playlist = computed(() => store.state.playlist)
     const playing = computed(() => store.state.playing)
@@ -242,6 +244,7 @@ export default {
       if(songReady.value) return
       songReady.value = true
       playLyric()
+      savePlay(currentSong.value)
     }
     function error() {
       songReady.value = true
