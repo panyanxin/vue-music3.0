@@ -3,21 +3,46 @@
     <div class="search-input-wrapper">
       <SearchInput v-model="query"></SearchInput>
     </div>
-    <div class="search-content" v-show="!query">
-      <div class="hot-keys">
-        <h1 class="title">热门搜索</h1>
-        <ul>
-          <li 
-            v-for="item in hotKeys"
-            :key='item.id'
-            class="item"
-            @click='addQuery(item.key)'
-          >
-            <span>{{item.key}}</span>
-          </li>
-        </ul>
+    <scroll 
+      class="search-content" 
+      v-show="!query"
+      ref='scrollRef'
+    >
+      <div>
+        <div class="hot-keys">
+          <h1 class="title">热门搜索</h1>
+          <ul>
+            <li 
+              v-for="item in hotKeys"
+              :key='item.id'
+              class="item"
+              @click='addQuery(item.key)'
+            >
+              <span>{{item.key}}</span>
+            </li>
+          </ul>
+        </div>
+        <div class="search-history" v-show="searchHistory.length">
+          <div class="title">
+            <span class="text">搜索历史</span>
+            <span class="clear" @click="showConfirm">
+              <i class="icon-clear"></i>
+            </span>
+          </div>
+          <confirm
+            ref="confirmRef"
+            text="是否清空所有搜索历史"
+            confirm-btn-text="清空"
+            @confirm="clearSearch"
+          />
+          <search-list
+            :searches="searchHistory"
+            @select="addQuery"
+            @delete="deleteSearch"
+          ></search-list>
+        </div>
       </div>
-    </div>
+    </scroll>
     <div class="search-result" v-show="query">
       <Suggest 
         :query="query"
@@ -36,33 +61,50 @@
 <script>
 import SearchInput from '@/components/search/search-input'
 import Suggest from '@/components/search/suggest'
-import {ref, watch} from 'vue'
+import SearchList from '@/components/search/search-list'
+import Scroll from '@/components/wrap-scroll'
+import Confirm from '@/components/base/confirm'
+import {ref, watch, computed} from 'vue'
 import { getHotKeys } from '@/service/search'
 import {useStore} from 'vuex'
 import {useRouter} from 'vue-router'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
+import useSearchHistory from '@/components/search/use-search-history'
 export default {
   name: 'search',
   setup() {
     const query = ref('')
     const hotKeys = ref([])
     const selectedSinger = ref(null)
-
+    const scrollRef = ref(null)
+    const confirmRef = ref(null)
+    
     const store = useStore()
+    const searchHistory = computed(() => store.state.searchHistory)
     const router = useRouter()
+
+    const { 
+      saveSearch, 
+      deleteSearch, 
+      clearSearch 
+    } = useSearchHistory()
+
     getHotKeys().then((result) => {
       hotKeys.value = result.hotKeys
     })
+
     function addQuery(val) {
       query.value = val
     }
 
     function selectSong(song) {
+      saveSearch(query.value)
       store.dispatch('addSong', song)
     }
 
     function selectSinger(singer) {
+      saveSearch(query.value)
       selectedSinger.value = singer
       cacheSinger(singer)
       router.push({
@@ -73,20 +115,42 @@ export default {
     function cacheSinger(singer) {
       storage.session.set(SINGER_KEY, singer)
     }
-    // watch(query, (val) => {
-      
-    // })
+    watch(query, async (newQuery) => {
+      if(!newQuery) {
+        await nextTick()
+        refreshScroll()
+      }
+    })
+    
+    function refreshScroll() {
+      scrollRef.value.scroll.refresh()
+    }
+
+    function showConfirm() {
+      confirmRef.value.show()
+    }
     return {
+      scrollRef,
+      confirmRef,
+      selectedSinger,
       query,
       hotKeys,
       addQuery,
       selectSong,
-      selectSinger
+      selectSinger,
+      searchHistory,
+      showConfirm,
+      // useSearchHistory hook
+      deleteSearch, 
+      clearSearch 
     }
   },
   components: {
     SearchInput,
-    Suggest
+    SearchList,
+    Suggest,
+    Scroll,
+    Confirm
   }
 }
 </script>

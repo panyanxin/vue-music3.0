@@ -33,6 +33,7 @@ export default {
       default: '取消'
     }
   },
+  emits: ['confirm', 'cancel'],
   data() {
     return {
       visible: false

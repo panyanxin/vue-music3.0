@@ -25,7 +25,10 @@ const mutations = {
       if(item.mid === song.mid) item.lyric = lyric
       return item
     })
-  }
+  },
+  setSearchHistory(state, searches) {
+    state.searchHistory = searches
+  },
 };
 
 export default mutations
