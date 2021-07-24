@@ -9,6 +9,8 @@ import Search from '@/views/search'
 import TopList from '@/views/top-list'
 import TopDetail from '@/views/top-detail'
 const Album = () => import('@/views/album'/* webpackChunkName: "album" */)
+import UserCenter from '@/views/user-center'
+// const UserCenter = () => import('@/views/user-center'/* webpackChunkName: "album" */)
 const routes = [{
     path: '/',
     redirect: '/recommend'
@@ -51,6 +53,10 @@ const routes = [{
         component: TopDetail
       }
     ]
+  },
+  {
+    path: '/user',
+    component: UserCenter
   }
 ]
 

@@ -84,6 +84,7 @@ export default {
       songs.value = []
       singer.value = null
       hasMore.value = true
+      
       const result = await search(props.query, page.value, props.showSinger)
       songs.value = await processSongs(result.songs)
       singer.value = result.singer

@@ -50,6 +50,7 @@ export default {
     return {
       toplist: [],
       loading: true,
+      selectedTop: null
     }
   },
   async created() {
