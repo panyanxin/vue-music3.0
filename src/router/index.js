@@ -56,7 +56,10 @@ const routes = [{
   },
   {
     path: '/user',
-    component: UserCenter
+    // component: UserCenter
+    components: { // 命名视图
+      user: UserCenter
+    }
   }
 ]
 

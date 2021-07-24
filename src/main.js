@@ -5,7 +5,7 @@ import store from './store'
 import lazyPlugin from 'vue3-lazy'
 import loadingDirective from '@/components/base/loading/directive'
 import noResultDirective from '@/components/base/no-result/directive'
-import {load} from '@/assets/js/array-store'
+import {load, saveAll } from '@/assets/js/array-store'
 import {FAVORITE_KEY, PLAY_KEY} from '@/assets/js/constant'
 import {processSongs} from '@/service/song'
 // 引入全局样式文件
